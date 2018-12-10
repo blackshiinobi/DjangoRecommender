@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% extends "showMovies/base.html" %}
+
+	{% block block_head %}
+
+		<script type="text/javascript">
+
+			function getPoster(movieID, title, genre){
+				var url = "https://api.themoviedb.org/3/search/movie?api_key={{ api_key }}&query="+title;
+				$.getJSON(url, function(data){
+					if(data.results != null){
+						$(function () {
+						  	$('[data-toggle="popover"]').popover();
+						});
+						poster_url = 'http://image.tmdb.org/t/p/w500/'+data.results[0].poster_path;
+						popover_div = '<strong>Released:</strong> ' + data.results[0].release_date +
+                                      '<br><strong>Language:</strong> ' + data.results[0].original_language +
+                                      '<br><strong>Genre:</strong> ' +  genre +
+                                      '<br><strong>Rating:</strong> '+ data.results[0].vote_average;
+
+                        a = document.createElement("a")
+                        a.setAttribute("href", "/posters/info/"+movieID)
+						img = document.createElement("img");
+						img.setAttribute('src', poster_url);
+						img.setAttribute('class', 'posters');
+						img.setAttribute('data-toggle', 'popover');
+						img.setAttribute('title', title);
+						img.setAttribute('data-html', 'true');
+						img.setAttribute('data-content', popover_div);
+						img.setAttribute('data-trigger', 'hover');
+						a.appendChild(img)
+						document.getElementById('movies').appendChild(a);
+
+					}
+				});
+			}
+
+			{% if movies %}
+				{% for x in movies %}
+					{% if x.movieId %}
+						var g = "";
+						{% for y in x.genres.all %}
+							g += " {{ y }} |";
+						{% endfor %}
+						getPoster('{{ x.movieId }}', '{{ x.title }}', g);
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+		</script>
+
+	{% endblock block_head %}
+
+	{% block body_block %}
+
+		{% if movies %}
+			<div id="movies">
+				
+			</div>
+
+		{% endif %}
+
+	{% endblock body_block %}
