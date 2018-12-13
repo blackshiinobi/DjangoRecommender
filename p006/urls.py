@@ -18,8 +18,9 @@ from django.urls import path, include
 from showMovies import views
 
 urlpatterns = [
-	path('', views.index, name='Movies'),
+	path('', views.index, name='user_login'),
 	path('posters/', include('showMovies.urls')),
-    path('posters/', include('showMovies.urls')),
     path('admin/', admin.site.urls),
+    path('posters/', views.posterTest, name='Movie Posters'),
+    path('logout/', views.user_logout, name='logout')
 ]

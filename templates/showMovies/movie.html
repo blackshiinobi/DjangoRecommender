@@ -5,14 +5,20 @@
 
 		<script type="text/javascript">
 
-			var url = "https://api.themoviedb.org/3/search/movie?api_key={{ api_key }}&query={{ title }}";
+			var url = "https://api.themoviedb.org/3/search/movie?api_key={{ api_key }}&query={{ film.title }}";
+			var g = "";
+			{% for x in film.genres.all %}
+				g += " {{ x }} |";
+			{% endfor %}
 			$.getJSON(url, function(data){
 				if(data.results != null){
 					poster_url = 'http://image.tmdb.org/t/p/w500/'+data.results[0].poster_path;
-					inside_para = '<strong>Released:</strong> ' + data.results[0].release_date +
-                                  '<br><strong>Language:</strong> ' + data.results[0].original_language +
-                                   '<br><strong>Description:</strong> ' + data.results[0].overview
-                                   '<br><strong>Rating:</strong> '+ data.results[0].vote_average;
+					inside_para = '<strong>Title:</strong> {{ film.title }}' +
+								'<br><strong>Genre:</strong> ' + g +
+								'<br><strong>Released:</strong> ' + data.results[0].release_date +
+                                '<br><strong>Language:</strong> ' + data.results[0].original_language +
+                                '<br><strong>Description:</strong> ' + data.results[0].overview
+                                '<br><strong>Rating:</strong> '+ data.results[0].vote_average;
 
 					img = document.createElement("img");
 					img.setAttribute('src', poster_url);
@@ -23,7 +29,7 @@
 					p.innerHTML = inside_para;
 
 					document.getElementById("moviePoster").appendChild(img);
-					document.getElementById("movieInfo").appendChild(p);
+					document.getElementById("infoHere").appendChild(p);
 				}
 			});
 
@@ -38,7 +44,19 @@
 					
 				</div>
 				<div id="movieInfo" class="col">
-					
+					<div id="infoHere">
+						
+					</div>
+					<div id="rateHere">
+						{% if film.movieId %}
+						<form action="{% url 'showMovies:Movie Details' movie_id=film.movieId %}" method="post">
+							{% csrf_token %}
+							<label for="r">Rate Movie</label>
+							<input type="number" name="r" max="5" min="1" placeholder="0">
+							<input type="submit" value="rate">
+						</form>
+						{% endif %}
+					</div>
 				</div>
 			</div>
 		</div>
